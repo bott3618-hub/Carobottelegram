@@ -1,0 +1,1 @@
+- [node-telegram-bot-api version pitfall](node-telegram-bot-api-versioning.md) — the 1.x rewrite breaks classic bot code; pin 0.66.0 + matching @types.

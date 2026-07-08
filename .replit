@@ -18,3 +18,12 @@ expertMode = true
 [postMerge]
 path = "scripts/post-merge.sh"
 timeoutMs = 20000
+
+[nix]
+channel = "stable-25_05"
+
+[userenv]
+
+[userenv.shared]
+GAME_BOARD_SIZE = "15"
+TELEGRAM_SUPER_ADMIN_ID = "5429428390"
