@@ -6,6 +6,7 @@ import { checkWin, createEngine, isBoardFull, isCellEmpty, placeMove } from "./e
 import { pickBotMove } from "./ai";
 import { boardCaption } from "./messages";
 import { renderBoardKeyboard, playerMarkEmoji } from "./render";
+import { recordWin } from "../db";
 import {
   clearGame,
   getGame,
@@ -78,11 +79,22 @@ async function finishGame(
   bot: TelegramBot,
   session: GameSession,
   status: string,
+  winner?: PlayerInfo,
 ): Promise<void> {
   session.finished = true;
   if (session.turnTimer) clearTimeout(session.turnTimer);
   await sendOrUpdateBoard(bot, session, status);
   clearGame(session.chatId);
+
+  // Only tally wins for real players, scoped to this chat — bot victories
+  // and draws are never recorded.
+  if (winner && !winner.isBot) {
+    try {
+      await recordWin(session.chatId, winner.id, winner.name);
+    } catch (err) {
+      logger.error({ err }, "Failed to record win");
+    }
+  }
 }
 
 async function maybePlayBotTurn(
@@ -132,6 +144,7 @@ async function applyMove(
       bot,
       session,
       `\u{1F3C6} ${playerMarkEmoji(player)} ${winner.name} giành chiến thắng!`,
+      winner,
     );
     return;
   }
@@ -190,5 +203,6 @@ async function handleTimeout(bot: TelegramBot, chatId: number): Promise<void> {
     `\u23F0 ${loser.name} hết giờ suy nghĩ! ${playerMarkEmoji(
       otherPlayer(session.currentPlayer),
     )} ${winner.name} giành chiến thắng!`,
+    winner,
   );
 }

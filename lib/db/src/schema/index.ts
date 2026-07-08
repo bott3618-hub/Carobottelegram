@@ -19,3 +19,4 @@
 
 export * from "./telegramGroups";
 export * from "./telegramMembers";
+export * from "./telegramWins";

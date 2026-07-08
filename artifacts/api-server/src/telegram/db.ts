@@ -1,9 +1,11 @@
-import { and, desc, eq } from "drizzle-orm";
+import { and, desc, eq, sql } from "drizzle-orm";
 import {
   db,
   telegramGroupsTable,
   telegramMembersTable,
+  telegramWinsTable,
   type TelegramGroup,
+  type TelegramWin,
 } from "@workspace/db";
 
 export async function upsertGroup(
@@ -129,4 +131,32 @@ export async function listMembers(chatId: string) {
     .from(telegramMembersTable)
     .where(eq(telegramMembersTable.chatId, chatId))
     .orderBy(desc(telegramMembersTable.lastSeenAt));
+}
+
+export async function recordWin(
+  chatId: number,
+  userId: number,
+  playerName: string,
+): Promise<void> {
+  const chatIdStr = String(chatId);
+  const userIdStr = String(userId);
+
+  await db
+    .insert(telegramWinsTable)
+    .values({ chatId: chatIdStr, userId: userIdStr, playerName, wins: 1 })
+    .onConflictDoUpdate({
+      target: [telegramWinsTable.chatId, telegramWinsTable.userId],
+      set: {
+        playerName,
+        wins: sql`${telegramWinsTable.wins} + 1`,
+      },
+    });
+}
+
+export async function listWins(chatId: number): Promise<TelegramWin[]> {
+  return db
+    .select()
+    .from(telegramWinsTable)
+    .where(eq(telegramWinsTable.chatId, String(chatId)))
+    .orderBy(desc(telegramWinsTable.wins));
 }

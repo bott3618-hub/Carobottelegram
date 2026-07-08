@@ -1,6 +1,6 @@
 import TelegramBot from "node-telegram-bot-api";
 import { logger } from "../lib/logger";
-import { isGroupAllowed, upsertGroup } from "./db";
+import { isGroupAllowed, listWins, upsertGroup } from "./db";
 import { sendGameIntro, handleJoin, handleJoinBot, handleModeSelection } from "./handlers/lobby";
 import {
   handleLeftMember,
@@ -57,6 +57,26 @@ export function startTelegramBot(): void {
   bot.on("message", (msg) => {
     void onMessage(msg);
   });
+}
+
+async function cmdWinStats(bot: TelegramBot, chatId: number): Promise<void> {
+  const wins = await listWins(chatId);
+
+  if (wins.length === 0) {
+    await bot.sendMessage(chatId, "Chưa có ai thắng ván nào trong nhóm này cả.");
+    return;
+  }
+
+  const medals = ["\u{1F947}", "\u{1F948}", "\u{1F949}"];
+  const lines = [
+    `\u{1F3C6} Bảng xếp hạng thắng cuộc (${wins.length} người):`,
+    ...wins.map((w, i) => {
+      const rank = medals[i] ?? `${i + 1}.`;
+      return `${rank} ${w.playerName || `User ${w.userId}`} — ${w.wins} lần thắng`;
+    }),
+  ];
+
+  await bot.sendMessage(chatId, lines.join("\n"));
 }
 
 async function answerCallback(
@@ -284,6 +304,9 @@ async function onMessage(msg: TelegramBot.Message): Promise<void> {
       break;
     case "/joinbot":
       if (msg.from) await handleJoinBot(bot, chatId, msg.from);
+      break;
+    case "/win":
+      await cmdWinStats(bot, chatId);
       break;
     default:
       break;
