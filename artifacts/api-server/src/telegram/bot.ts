@@ -131,7 +131,11 @@ async function onMessage(msg: TelegramBot.Message): Promise<void> {
 
   const chatId = msg.chat.id;
   const isGroup = isGroupChatType(msg.chat.type);
-  const [command, ...rest] = msg.text.trim().split(/\s+/);
+  const [rawCommand, ...rest] = msg.text.trim().split(/\s+/);
+  // In groups Telegram often sends commands as "/join@BotUsername" (e.g. when
+  // multiple bots are present); strip the "@..." suffix so command matching
+  // below still works regardless of how the client sent it.
+  const command = rawCommand?.split("@")[0];
   const args = rest;
 
   // Admin commands work from anywhere (DM or group) — gated by user id, not chat.
