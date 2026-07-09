@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "rLwsd45is4sK6mVsKChR_"
+uri = "file://caro-bot-deploy.zip"
+type = "unspecified"
+title = "Gói triển khai bot Caro (chạy trên VPS)"
