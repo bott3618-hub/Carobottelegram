@@ -12,7 +12,7 @@ A Telegram bot that lets people play Caro (Gomoku, 4-or-5-in-a-row) against each
 - Required env: `DATABASE_URL` — Postgres connection string
 - Required secret: `TELEGRAM_BOT_TOKEN` — bot token from @BotFather
 - Required env: `TELEGRAM_SUPER_ADMIN_ID` — Telegram user ID with full admin control over the bot
-- Optional env: `GAME_BOARD_SIZE` — board dimension (default 15; set to 10 in this project so the full board fits on one phone screen without scrolling)
+- Optional env: `GAME_BOARD_SIZE` — board dimension (default 15; set to 8 in this project so the full board fits on one phone screen without scrolling — Telegram enforces a minimum inline-button touch width (~48px), so boards larger than ~8 columns overflow the screen width and require horizontal swipe on the message to see hidden columns, which can make the bot's win look "invalid" when the winning line is actually just off-screen)
 
 ## Stack
 

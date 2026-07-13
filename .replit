@@ -23,4 +23,4 @@ timeoutMs = 20000
 
 [userenv.shared]
 TELEGRAM_SUPER_ADMIN_ID = "5429428390"
-GAME_BOARD_SIZE = "10"
+GAME_BOARD_SIZE = "8"
