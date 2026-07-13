@@ -20,7 +20,9 @@ function displayName(from: TelegramBot.User): string {
 
 export function mainReplyKeyboard(): TelegramBot.ReplyKeyboardMarkup {
   return {
-    keyboard: [[{ text: "/join" }], [{ text: "/joinbot" }]],
+    keyboard: [
+      [{ text: "/start" }, { text: "/join" }, { text: "/joinbot" }, { text: "/win" }],
+    ],
     resize_keyboard: true,
     is_persistent: true,
   };
