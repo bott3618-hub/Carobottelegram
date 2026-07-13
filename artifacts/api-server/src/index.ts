@@ -2,6 +2,15 @@ import app from "./app";
 import { logger } from "./lib/logger";
 import { startTelegramBot } from "./telegram/bot";
 
+// A single failed Telegram API call (e.g. malformed Markdown from
+// user-controlled text) must not take down the whole server process.
+process.on("unhandledRejection", (reason) => {
+  logger.error({ err: reason }, "Unhandled promise rejection");
+});
+process.on("uncaughtException", (err) => {
+  logger.error({ err }, "Uncaught exception");
+});
+
 const rawPort = process.env["PORT"];
 
 if (!rawPort) {

@@ -45,13 +45,12 @@ export async function handleMyChatMember(
       update.chat.id,
       [
         "Xin chào! Đây là ID của nhóm này:",
-        `\`${update.chat.id}\``,
+        `${update.chat.id}`,
         "",
         group.allowed
           ? "Nhóm này đã được kích hoạt, có thể chơi ngay!"
           : `Nhóm chưa được kích hoạt. Vui lòng liên hệ admin ${CONTACT_ADMIN_USERNAME} để mở quyền sử dụng bot cho nhóm này.`,
       ].join("\n"),
-      { parse_mode: "Markdown" },
     );
 
     if (group.allowed) {

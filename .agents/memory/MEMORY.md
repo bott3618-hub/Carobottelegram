@@ -1,3 +1,4 @@
 - [Importing a GitHub repo built on the same Replit monorepo template](importing-same-template-repo.md) — diff package-by-package and copy only the product-specific files in, don't overwrite scaffold.
 - [node-telegram-bot-api versioning pitfall](node-telegram-bot-api-versioning.md) — the 1.x rewrite breaks classic bot code; pin 0.66.0 + matching @types.
 - [Telegram inline keyboard board-size limits](telegram-inline-keyboard-board-size.md) — min ~48px button width means boards >~8 cols/rows overflow screen and need scroll; "bot won with no visible line" can be a display crop, not a scoring bug.
+- [Telegram bot crash-safety](telegram-bot-crash-safety.md) — legacy Markdown parse_mode on user-controlled text (names/titles) crashes the whole process if unhandled; escape/avoid it and add process-level rejection handlers.

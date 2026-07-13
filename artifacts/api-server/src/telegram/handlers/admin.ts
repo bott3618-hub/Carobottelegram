@@ -44,9 +44,11 @@ export async function cmdListGroups(
 
   const lines = groups.map(
     (g) =>
-      `${g.allowed ? "\u2705" : "\u274C"} \`${g.chatId}\` — ${g.title || "(chưa rõ tên)"}`,
+      `${g.allowed ? "\u2705" : "\u274C"} ${g.chatId} — ${g.title || "(chưa rõ tên)"}`,
   );
-  await bot.sendMessage(chatId, lines.join("\n"), { parse_mode: "Markdown" });
+  // Group titles are user-controlled and may contain characters (_, *, `)
+  // that break Telegram's legacy Markdown parser, so send as plain text.
+  await bot.sendMessage(chatId, lines.join("\n"));
 }
 
 export async function cmdSetAllowed(
@@ -102,9 +104,11 @@ export async function cmdMembers(
 
   const lines = members.map(
     (m) =>
-      `\`${m.userId}\` — ${memberDisplayName(m)}${m.username ? ` (@${m.username})` : ""}`,
+      `${m.userId} — ${memberDisplayName(m)}${m.username ? ` (@${m.username})` : ""}`,
   );
-  await bot.sendMessage(chatId, lines.join("\n"), { parse_mode: "Markdown" });
+  // Member names/usernames are user-controlled and may contain characters
+  // (_, *, `) that break Telegram's legacy Markdown parser, so send as plain text.
+  await bot.sendMessage(chatId, lines.join("\n"));
 }
 
 export async function cmdExportMembers(

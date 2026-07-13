@@ -288,8 +288,7 @@ async function onMessage(msg: TelegramBot.Message): Promise<void> {
     if (command === "/join" || command === "/joinbot" || command === "/start") {
       await bot.sendMessage(
         chatId,
-        `Nhóm này chưa được kích hoạt. Vui lòng liên hệ admin @vt1838 và gửi ID nhóm: \`${chatId}\``,
-        { parse_mode: "Markdown" },
+        `Nhóm này chưa được kích hoạt. Vui lòng liên hệ admin @vt1838 và gửi ID nhóm: ${chatId}`,
       );
     }
     return;
