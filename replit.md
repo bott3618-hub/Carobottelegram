@@ -12,7 +12,7 @@ A Telegram bot that lets people play Caro (Gomoku, 4-or-5-in-a-row) against each
 - Required env: `DATABASE_URL` — Postgres connection string
 - Required secret: `TELEGRAM_BOT_TOKEN` — bot token from @BotFather
 - Required env: `TELEGRAM_SUPER_ADMIN_ID` — Telegram user ID with full admin control over the bot
-- Optional env: `GAME_BOARD_ROWS` / `GAME_BOARD_COLS` — board dimensions (each independently defaults to `GAME_BOARD_SIZE` if unset, which itself defaults to 15). Board can be rectangular. Set to 8 rows x 10 cols in this project — Telegram enforces a minimum inline-button touch width (~48px), so boards much larger than ~8 in either dimension overflow the screen and require scrolling/swiping on the message to see hidden cells, which can make the bot's win look "invalid" when the winning line is actually just off-screen
+- Optional env: `GAME_BOARD_ROWS` / `GAME_BOARD_COLS` — board dimensions (each independently defaults to `GAME_BOARD_SIZE` if unset, which itself defaults to 15). Board can be rectangular. Set to 10 rows x 8 cols in this project: `GAME_BOARD_COLS` is capped at 8 because Telegram enforces a minimum inline-button touch width (~48px) and won't shrink buttons further, so wider boards overflow the screen horizontally and require an awkward mid-message swipe to see hidden columns (this can make a bot win look "invalid" when the line is just off-screen). `GAME_BOARD_ROWS` has no such cap — extra rows just make the message taller, and normal vertical chat scrolling reveals them fine
 
 ## Stack
 
