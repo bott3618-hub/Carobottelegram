@@ -1,29 +1,29 @@
-import { BOARD_SIZE, type WinLength } from "../constants";
+import { BOARD_COLS, BOARD_ROWS, type WinLength } from "../constants";
 
 export type Cell = 0 | 1 | 2; // 0 = empty, 1 = player one, 2 = player two
 
 export interface GameEngine {
   board: Cell[][];
-  size: number;
+  rows: number;
+  cols: number;
   winLength: WinLength;
 }
 
-export function createBoard(size: number): Cell[][] {
-  return Array.from({ length: size }, () =>
-    Array<Cell>(size).fill(0),
-  );
+export function createBoard(rows: number, cols: number): Cell[][] {
+  return Array.from({ length: rows }, () => Array<Cell>(cols).fill(0));
 }
 
 export function createEngine(winLength: WinLength): GameEngine {
   return {
-    board: createBoard(BOARD_SIZE),
-    size: BOARD_SIZE,
+    board: createBoard(BOARD_ROWS, BOARD_COLS),
+    rows: BOARD_ROWS,
+    cols: BOARD_COLS,
     winLength,
   };
 }
 
 export function isInBounds(engine: GameEngine, row: number, col: number): boolean {
-  return row >= 0 && row < engine.size && col >= 0 && col < engine.size;
+  return row >= 0 && row < engine.rows && col >= 0 && col < engine.cols;
 }
 
 export function isCellEmpty(engine: GameEngine, row: number, col: number): boolean {

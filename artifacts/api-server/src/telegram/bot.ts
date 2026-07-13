@@ -20,7 +20,7 @@ import {
   isSuperAdmin,
 } from "./handlers/admin";
 import { handleMove } from "./game/manager";
-import { BOARD_SIZE } from "./constants";
+import { BOARD_COLS, BOARD_ROWS } from "./constants";
 
 let bot: TelegramBot | null = null;
 
@@ -117,8 +117,8 @@ async function onCallbackQuery(query: TelegramBot.CallbackQuery): Promise<void> 
       !Number.isInteger(col) ||
       row < 0 ||
       col < 0 ||
-      row >= BOARD_SIZE ||
-      col >= BOARD_SIZE
+      row >= BOARD_ROWS ||
+      col >= BOARD_COLS
     ) {
       await answerCallback(query, "Nước đi không hợp lệ.");
       return;

@@ -12,9 +12,9 @@ export function renderBoardKeyboard(
 ): TelegramBot.InlineKeyboardButton[][] {
   const rows: TelegramBot.InlineKeyboardButton[][] = [];
 
-  for (let row = 0; row < engine.size; row++) {
+  for (let row = 0; row < engine.rows; row++) {
     const cols: TelegramBot.InlineKeyboardButton[] = [];
-    for (let col = 0; col < engine.size; col++) {
+    for (let col = 0; col < engine.cols; col++) {
       const cell = engine.board[row]![col];
       cols.push({
         text: MARKS[cell],

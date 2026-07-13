@@ -12,8 +12,8 @@ function collectCandidates(engine: GameEngine): Candidate[] {
   const candidates = new Set<string>();
   let hasAnyPiece = false;
 
-  for (let row = 0; row < engine.size; row++) {
-    for (let col = 0; col < engine.size; col++) {
+  for (let row = 0; row < engine.rows; row++) {
+    for (let col = 0; col < engine.cols; col++) {
       if (engine.board[row]![col] === 0) continue;
       hasAnyPiece = true;
 
@@ -30,8 +30,9 @@ function collectCandidates(engine: GameEngine): Candidate[] {
   }
 
   if (!hasAnyPiece) {
-    const mid = Math.floor(engine.size / 2);
-    return [{ row: mid, col: mid }];
+    const midRow = Math.floor(engine.rows / 2);
+    const midCol = Math.floor(engine.cols / 2);
+    return [{ row: midRow, col: midCol }];
   }
 
   return [...candidates].map((key) => {
