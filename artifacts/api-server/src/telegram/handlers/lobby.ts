@@ -101,6 +101,7 @@ export async function handleJoin(
   await bot.sendMessage(
     chatId,
     `Trận đấu bắt đầu: ${existingLobby.host.name} vs ${host.name}!`,
+    { reply_markup: mainReplyKeyboard() },
   );
   await startGame(
     bot,
@@ -173,6 +174,8 @@ export async function handleJoinBot(
   const host: PlayerInfo = { id: from.id, name: displayName(from), isBot: false };
   const botPlayer: PlayerInfo = { id: -1, name: "Bot", isBot: true };
 
-  await bot.sendMessage(chatId, `${host.name} thách đấu Bot (5 con thắng)!`);
+  await bot.sendMessage(chatId, `${host.name} thách đấu Bot (5 con thắng)!`, {
+    reply_markup: mainReplyKeyboard(),
+  });
   await startGame(bot, chatId, 5, host, botPlayer, true);
 }
