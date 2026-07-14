@@ -23,3 +23,23 @@ that one message.
   user-controlled input (names, titles, usernames) unless it is properly
   escaped for that parse mode. Prefer sending plain text (no `parse_mode`) for
   such messages instead of trying to escape every special character.
+
+## Silent desync from editMessageText rate limits
+
+`editMessageText` (used to update an in-place game board) can hit Telegram's
+per-chat rate limit (~1 edit/sec) and return 429 "Too Many Requests" when
+moves happen in quick succession. If that error is only logged and swallowed,
+the server-side game state still finishes (win/timeout/draw), but the chat UI
+never shows the result — the board looks frozen on "your turn" while the
+game is actually already over, so the next tap says "the match already
+ended" with no visible cause.
+
+**Why:** silently catching the edit failure decoupled "game state" from
+"what the user sees" — the two must stay in sync or the game looks broken
+even though the logic was correct.
+
+**How to apply:** on 429 from a Telegram edit call, retry after the
+API-provided `retry_after` (a couple of attempts). If retries are exhausted
+for a *final* state update (win/loss/draw/timeout), fall back to sending a
+brand-new message instead of dropping the update — the outcome must always
+reach the chat even if the in-place edit never lands.

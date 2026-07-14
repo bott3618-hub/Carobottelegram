@@ -16,6 +16,26 @@ import {
   type PlayerInfo,
 } from "./state";
 
+// Telegram's editMessageText enforces a per-chat rate limit (~1 edit/sec).
+// Rapid moves (e.g. bot replying right after a player, or a player tapping
+// quickly) can trigger a 429 "Too Many Requests" response. Retry a couple of
+// times honoring `retry_after` before giving up.
+const MAX_EDIT_RETRIES = 2;
+
+function getRetryAfterSeconds(err: unknown): number | null {
+  if (err && typeof err === "object" && "response" in err) {
+    const response = (err as { response?: unknown }).response;
+    if (response && typeof response === "object" && "body" in response) {
+      const body = (response as { body?: unknown }).body;
+      const retryAfter = (
+        body as { parameters?: { retry_after?: unknown } } | undefined
+      )?.parameters?.retry_after;
+      if (typeof retryAfter === "number") return retryAfter;
+    }
+  }
+  return null;
+}
+
 async function sendOrUpdateBoard(
   bot: TelegramBot,
   session: GameSession,
@@ -32,14 +52,49 @@ async function sendOrUpdateBoard(
     return;
   }
 
-  try {
-    await bot.editMessageText(text, {
-      chat_id: session.chatId,
-      message_id: session.boardMessageId,
-      reply_markup: { inline_keyboard: keyboard },
-    });
-  } catch (err) {
-    logger.warn({ err }, "Failed to edit board message");
+  for (let attempt = 0; attempt <= MAX_EDIT_RETRIES; attempt++) {
+    try {
+      await bot.editMessageText(text, {
+        chat_id: session.chatId,
+        message_id: session.boardMessageId,
+        reply_markup: { inline_keyboard: keyboard },
+      });
+      return;
+    } catch (err) {
+      const retryAfterSec = getRetryAfterSeconds(err);
+      if (retryAfterSec != null && attempt < MAX_EDIT_RETRIES) {
+        logger.warn(
+          { err, attempt, retryAfterSec },
+          "Rate limited editing board message, retrying",
+        );
+        await new Promise((resolve) =>
+          setTimeout(resolve, (retryAfterSec + 1) * 1000),
+        );
+        continue;
+      }
+
+      logger.warn({ err }, "Failed to edit board message");
+
+      // The edit is permanently rejected (rate limit exhausted or some other
+      // error). For a final result (`status` set — win/loss/draw/timeout)
+      // this must not be silently swallowed, or the game ends server-side
+      // while the chat still shows the stale "your turn" board with no
+      // visible outcome. Fall back to a brand-new message in that case.
+      if (status) {
+        try {
+          const sent = await bot.sendMessage(session.chatId, text, {
+            reply_markup: { inline_keyboard: keyboard },
+          });
+          session.boardMessageId = sent.message_id;
+        } catch (fallbackErr) {
+          logger.error(
+            { err: fallbackErr },
+            "Failed to send fallback board message after edit failure",
+          );
+        }
+      }
+      return;
+    }
   }
 }
 
